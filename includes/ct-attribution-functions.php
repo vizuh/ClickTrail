@@ -7,19 +7,19 @@
  * @return array|string Sanitized data.
  */
 function clicktrail_sanitize_attribution_data( $data ) {
-        if ( is_array( $data ) ) {
-                foreach ( $data as $key => $value ) {
-                        $data[ $key ] = clicktrail_sanitize_attribution_data( $value );
-                }
+	if ( is_array( $data ) ) {
+		foreach ( $data as $key => $value ) {
+			$data[ $key ] = clicktrail_sanitize_attribution_data( $value );
+		}
 
-                return $data;
-        }
+		return $data;
+	}
 
-        if ( is_scalar( $data ) ) {
-                return sanitize_text_field( (string) $data );
-        }
+	if ( is_scalar( $data ) ) {
+		return sanitize_text_field( (string) $data );
+	}
 
-        return '';
+	return '';
 }
 
 /**
@@ -28,15 +28,15 @@ function clicktrail_sanitize_attribution_data( $data ) {
  * @return array|null The attribution data array or null if not found.
  */
 function clicktrail_get_attribution() {
-        if ( isset( $_COOKIE['ct_attribution'] ) ) {
-                $raw_cookie_value = wp_unslash( $_COOKIE['ct_attribution'] );
-                $data             = json_decode( $raw_cookie_value, true );
+	if ( isset( $_COOKIE['ct_attribution'] ) ) {
+		$raw_cookie_value = sanitize_text_field( wp_unslash( $_COOKIE['ct_attribution'] ) );
+		$data             = json_decode( $raw_cookie_value, true );
 
-                if ( json_last_error() === JSON_ERROR_NONE ) {
-                        return clicktrail_sanitize_attribution_data( $data );
-                }
-        }
-        return null;
+		if ( json_last_error() === JSON_ERROR_NONE ) {
+			return clicktrail_sanitize_attribution_data( $data );
+		}
+	}
+	return null;
 }
 
 /**
