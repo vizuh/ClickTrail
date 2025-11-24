@@ -24,6 +24,13 @@
 
             let storedData = this.getStoredData();
 
+            // Debug: Init
+            console.log('HP Attribution init', {
+                url: window.location.href,
+                params: currentParams,
+                storedDataBefore: storedData
+            });
+
             // Prepare new touch data
             let newTouch = {};
             let hasMarketingParams = false;
@@ -64,6 +71,11 @@
                 }
 
                 this.saveData(storedData);
+
+                // Debug: Saved
+                console.log('HP Attribution saved', {
+                    storedDataAfter: storedData
+                });
             }
 
             // Expose to window
