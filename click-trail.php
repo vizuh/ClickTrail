@@ -26,8 +26,8 @@ require_once CLICKTRAIL_DIR . 'includes/hp-attribution-functions.php';
 /**
  * Initialize the plugin
  */
-function hp_attribution_init() {
-	$plugin = new HP_Attribution_Core();
+function clicktrail_init() {
+	$plugin = new ClickTrail_Core();
 	$plugin->run();
 }
-add_action( 'plugins_loaded', 'hp_attribution_init' );
+add_action( 'plugins_loaded', 'clicktrail_init' );

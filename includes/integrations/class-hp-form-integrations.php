@@ -1,6 +1,6 @@
 <?php
 
-class HP_Form_Integrations {
+class ClickTrail_Form_Integrations {
 
 	public function init() {
 		// Contact Form 7

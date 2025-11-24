@@ -6,7 +6,7 @@
  * This is used to define internationalization, admin-specific hooks, and
  * public-facing site hooks.
  */
-class HP_Attribution_Core {
+class ClickTrail_Core {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -56,7 +56,7 @@ class HP_Attribution_Core {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_settings = new HP_Attribution_Admin();
+		$plugin_settings = new ClickTrail_Admin();
 		$plugin_settings->init();
 
 		// AJAX for PII Logging
@@ -75,10 +75,10 @@ class HP_Attribution_Core {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		
 		// Initialize Integrations
-		$form_integrations = new HP_Form_Integrations();
+		$form_integrations = new ClickTrail_Form_Integrations();
 		$form_integrations->init();
 
-		$woocommerce_integration = new HP_WooCommerce_Integration();
+		$woocommerce_integration = new ClickTrail_WooCommerce_Integration();
 		$woocommerce_integration->init();
 	}
 

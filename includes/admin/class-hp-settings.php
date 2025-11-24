@@ -1,6 +1,6 @@
 <?php
 
-class HP_Attribution_Admin {
+class ClickTrail_Admin {
 
 	private $option_name = 'hp_attribution_settings';
 
