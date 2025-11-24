@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    const CONFIG = window.hpAttributionConfig || {
+    const CONFIG = window.clickTrailConfig || {
         cookieName: 'hp_attribution',
         cookieDays: 90,
         requireConsent: false
@@ -9,7 +9,7 @@
 
     const CONSENT_COOKIE = 'hp_consent';
 
-    class HPAttribution {
+    class ClickTrailAttribution {
         constructor() {
             this.paramsToCapture = [
                 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
@@ -24,10 +24,10 @@
                 if (consent && consent.marketing) {
                     this.runAttribution();
                 } else {
-                    console.log('HP Attribution: Waiting for consent...');
+                    console.log('ClickTrail: Waiting for consent...');
                     window.addEventListener('hp_consent_updated', (e) => {
                         if (e.detail.marketing) {
-                            console.log('HP Attribution: Consent granted, running...');
+                            console.log('ClickTrail: Consent granted, running...');
                             this.runAttribution();
                         }
                     });
@@ -47,7 +47,7 @@
             let storedData = this.getStoredData();
 
             // Debug: Init
-            console.log('HP Attribution init', {
+            console.log('ClickTrail init', {
                 url: window.location.href,
                 params: currentParams,
                 storedDataBefore: storedData
@@ -95,13 +95,13 @@
                 this.saveData(storedData);
 
                 // Debug: Saved
-                console.log('HP Attribution saved', {
+                console.log('ClickTrail saved', {
                     storedDataAfter: storedData
                 });
             }
 
             // Expose to window
-            window.hpAttribution = storedData;
+            window.clickTrail = storedData;
 
             // GTM Bridge: Page View
             window.dataLayer = window.dataLayer || [];
@@ -178,18 +178,21 @@
             });
 
             if (piiFound) {
-                console.warn('HP Attribution: PII detected in Data Layer. Sending alert.');
+                console.warn('ClickTrail: PII detected in Data Layer. Sending alert.');
                 // Send AJAX to log risk
                 // We use fetch for simplicity, assuming modern browser or polyfill
                 if (CONFIG.ajaxUrl) {
                     const formData = new FormData();
                     formData.append('action', 'hp_log_pii_risk');
                     formData.append('pii_found', 'true');
+                    if (CONFIG.nonce) {
+                        formData.append('nonce', CONFIG.nonce);
+                    }
 
                     fetch(CONFIG.ajaxUrl, {
                         method: 'POST',
                         body: formData
-                    }).catch(e => console.error('HP Attribution: Error logging PII risk', e));
+                    }).catch(e => console.error('ClickTrail: Error logging PII risk', e));
                 }
             }
         }
@@ -279,9 +282,9 @@
     // Initialize - Wait for consent signal (requires user to implement a CMP)
     window.addEventListener('consent_granted', () => {
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => new HPAttribution());
+            document.addEventListener('DOMContentLoaded', () => new ClickTrailAttribution());
         } else {
-            new HPAttribution();
+            new ClickTrailAttribution();
         }
     });
 

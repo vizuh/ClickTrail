@@ -11,30 +11,32 @@ class HP_Attribution_Admin {
 	}
 
 	public function add_admin_menu() {
-		add_options_page(
-			'Attribution & Consent',
-			'Attribution & Consent',
+		add_menu_page(
+			'ClickTrail Audit & Settings',
+			'ClickTrail',
 			'manage_options',
-			'hp-attribution',
-			array( $this, 'render_settings_page' )
+			'clicktrail',
+			array( $this, 'render_settings_page' ),
+			'dashicons-chart-area',
+			30
 		);
 	}
 
 	public function register_settings() {
-		register_setting( $this->option_name, $this->option_name );
+		register_setting( $this->option_name, $this->option_name, array( $this, 'sanitize_settings' ) );
 
 		add_settings_section(
 			'hp_general_section',
 			'General Settings',
 			null,
-			'hp-attribution'
+			'clicktrail'
 		);
 
 		add_settings_field(
 			'enable_attribution',
 			'Enable Attribution',
 			array( $this, 'render_checkbox_field' ),
-			'hp-attribution',
+			'clicktrail',
 			'hp_general_section',
 			array( 'label_for' => 'enable_attribution' )
 		);
@@ -43,7 +45,7 @@ class HP_Attribution_Admin {
 			'cookie_days',
 			'Cookie Duration (Days)',
 			array( $this, 'render_number_field' ),
-			'hp-attribution',
+			'clicktrail',
 			'hp_general_section',
 			array( 'label_for' => 'cookie_days', 'default' => 90 )
 		);
@@ -52,14 +54,14 @@ class HP_Attribution_Admin {
 			'hp_consent_section',
 			'Consent Settings',
 			null,
-			'hp-attribution'
+			'clicktrail'
 		);
 
 		add_settings_field(
 			'enable_consent_banner',
 			'Enable Consent Banner',
 			array( $this, 'render_checkbox_field' ),
-			'hp-attribution',
+			'clicktrail',
 			'hp_consent_section',
 			array( 'label_for' => 'enable_consent_banner' )
 		);
@@ -68,7 +70,7 @@ class HP_Attribution_Admin {
 			'require_consent',
 			'Require Consent for Tracking',
 			array( $this, 'render_checkbox_field' ),
-			'hp-attribution',
+			'clicktrail',
 			'hp_consent_section',
 			array( 'label_for' => 'require_consent' )
 		);
@@ -81,7 +83,7 @@ class HP_Attribution_Admin {
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( $this->option_name );
-				do_settings_sections( 'hp-attribution' );
+				do_settings_sections( 'clicktrail' );
 				submit_button();
 				?>
 			</form>
@@ -107,9 +109,7 @@ class HP_Attribution_Admin {
 	}
 
 	public function ajax_log_pii_risk() {
-		// Security check? For MVP, maybe just check if it's a valid request. 
-		// Ideally we check nonce, but for a public facing pixel firing this, nonces are tricky with caching.
-		// We will trust the signal for now but sanitize.
+		check_ajax_referer( 'clicktrail_pii_nonce', 'nonce' );
 		
 		if ( isset( $_POST['pii_found'] ) && $_POST['pii_found'] === 'true' ) {
 			update_option( 'hp_pii_risk_detected', true );
@@ -122,11 +122,20 @@ class HP_Attribution_Admin {
 		if ( get_option( 'hp_pii_risk_detected' ) ) {
 			?>
 			<div class="notice notice-error is-dismissible">
-				<p><strong><?php _e( 'DataBridge Audit detected PII risk on your Thank You page. Your tracking may be deactivated by Google.', 'hp-attribution' ); ?></strong></p>
-				<p><a href="#" class="button button-primary"><?php _e( 'Fix PII Issues Now', 'hp-attribution' ); ?></a></p>
+				<p><strong><?php _e( 'ClickTrail Audit detected PII risk on your Thank You page. Your tracking may be deactivated by Google.', 'clicktrail' ); ?></strong></p>
+				<p><a href="#" class="button button-primary"><?php _e( 'Fix PII Issues Now', 'clicktrail' ); ?></a></p>
 			</div>
 			<?php
 		}
+	}
+
+	public function sanitize_settings( $input ) {
+		$new_input = array();
+		if( isset( $input['enable_attribution'] ) ) $new_input['enable_attribution'] = absint( $input['enable_attribution'] );
+		if( isset( $input['cookie_days'] ) ) $new_input['cookie_days'] = absint( $input['cookie_days'] );
+		if( isset( $input['enable_consent_banner'] ) ) $new_input['enable_consent_banner'] = absint( $input['enable_consent_banner'] );
+		if( isset( $input['require_consent'] ) ) $new_input['require_consent'] = absint( $input['require_consent'] );
+		return $new_input;
 	}
 
 }

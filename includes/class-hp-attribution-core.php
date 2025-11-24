@@ -41,11 +41,11 @@ class HP_Attribution_Core {
 	 */
 	private function load_dependencies() {
 		// Admin
-		require_once HP_ATTRIBUTION_DIR . 'includes/admin/class-hp-settings.php';
+		require_once CLICKTRAIL_DIR . 'includes/admin/class-hp-settings.php';
 		
 		// Integrations
-		require_once HP_ATTRIBUTION_DIR . 'includes/integrations/class-hp-form-integrations.php';
-		require_once HP_ATTRIBUTION_DIR . 'includes/integrations/class-hp-woocommerce.php';
+		require_once CLICKTRAIL_DIR . 'includes/integrations/class-hp-form-integrations.php';
+		require_once CLICKTRAIL_DIR . 'includes/integrations/class-hp-woocommerce.php';
 	}
 
 	/**
@@ -93,35 +93,36 @@ class HP_Attribution_Core {
 
 		// Attribution Script
 		wp_enqueue_script(
-			'hp-attribution-js',
-			HP_ATTRIBUTION_URL . 'assets/js/hp-attribution.js',
+			'clicktrail-attribution-js',
+			CLICKTRAIL_URL . 'assets/js/clicktrail-attribution.js',
 			array(), 
-			HP_ATTRIBUTION_VERSION,
-			false 
+			CLICKTRAIL_VERSION,
+			false // Load in Head
 		);
 
-		wp_localize_script( 'hp-attribution-js', 'hpAttributionConfig', array(
+		wp_localize_script( 'clicktrail-attribution-js', 'clickTrailConfig', array(
 			'cookieName' => 'hp_attribution',
 			'cookieDays' => $cookie_days,
 			'requireConsent' => $require_consent,
 			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+			'nonce'      => wp_create_nonce( 'clicktrail_pii_nonce' ),
 		));
 
 		// Consent Script & Style
 		if ( $enable_consent ) {
 			wp_enqueue_style(
 				'hp-consent-css',
-				HP_ATTRIBUTION_URL . 'assets/css/hp-consent.css',
+				CLICKTRAIL_URL . 'assets/css/hp-consent.css',
 				array(),
-				HP_ATTRIBUTION_VERSION,
+				CLICKTRAIL_VERSION,
 				'all'
 			);
 
 			wp_enqueue_script(
 				'hp-consent-js',
-				HP_ATTRIBUTION_URL . 'assets/js/hp-consent.js',
+				CLICKTRAIL_URL . 'assets/js/hp-consent.js',
 				array(),
-				HP_ATTRIBUTION_VERSION,
+				CLICKTRAIL_VERSION,
 				true // Footer
 			);
 		}
